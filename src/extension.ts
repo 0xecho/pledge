@@ -19,21 +19,9 @@ function generatePledge ({ fromBranch, toBranch, directory }: GetDiffOptions) {
 		language: 'plaintext'
 	}).then(doc => {
 		vscode.window.showTextDocument(doc, 1, false).then(editor => {
-			const newLastLine: string = `// Generate a commit message for the above diff in the following format:
-<type>(<scope>): <subject | short summary>
+			const newLastLine: string = `// Generate 5 potential conventional commit messages for the above diff from branch ${fromBranch} to branch ${toBranch}.
+			1. `;
 
-- list of changes
-- another change
-
-example:
-feat(ticket-123): add new feature
-
-- adds checking if username is set or not
-- improves experience on mobile
-- fixes issue with sign in button not showing
-
-
-`;
 			editor.edit(editBuilder => {
 				editBuilder.insert(new vscode.Position(editor.document.lineCount, 0), newLastLine);
 				editor.selection = new vscode.Selection(new vscode.Position(editor.document.lineCount, 0), new vscode.Position(editor.document.lineCount, 0));
