@@ -50,7 +50,6 @@ feat(ticket-123): add new feature
 export function activate (context: vscode.ExtensionContext) {
 
 	vscode.commands.registerCommand('pledge.generate', () => {
-		const defaultBranchName: string = vscode.workspace.getConfiguration('pledge').get('defaultBranchName') || 'main';
 		try {
 			const allBranches = getAllBranches({ directory: vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor!.document.uri)?.uri.fsPath });
 			vscode.window.showQuickPick(allBranches, {
