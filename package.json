@@ -87,5 +87,6 @@
     "git",
     "vscode",
     "github"
-  ]
+  ],
+  "publisher": "0xecho"
 }

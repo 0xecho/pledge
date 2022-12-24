@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { getAllBranches, getCurrentBranch, getDiff, GetDiffOptions } from './gitHelpers';
+import { getAllBranches, getDiff, GetDiffOptions } from './gitHelpers';
 
 function generatePledge ({ fromBranch, toBranch, directory }: GetDiffOptions) {
 	const diff = getDiff({
@@ -15,12 +15,17 @@ function generatePledge ({ fromBranch, toBranch, directory }: GetDiffOptions) {
 	}
 
 	vscode.workspace.openTextDocument({
-		content: diff,
+		content: `--- DIFF BEGIN ---
+${diff}
+--- DIFF END ---
+`,
 		language: 'plaintext'
 	}).then(doc => {
 		vscode.window.showTextDocument(doc, 1, false).then(editor => {
-			const newLastLine: string = `// Generate 5 potential conventional commit messages for the above diff from branch ${fromBranch} to branch ${toBranch}.
-			1. `;
+			const newLastLine: string = `The above diff is uncommitted, and is going to be commited
+What are some good conventional commit messages for the above changes?
+
+1. `;
 
 			editor.edit(editBuilder => {
 				editBuilder.insert(new vscode.Position(editor.document.lineCount, 0), newLastLine);
@@ -48,13 +53,10 @@ export function activate (context: vscode.ExtensionContext) {
 				if (input === undefined) {
 					return;
 				}
-				const currentBranch = getCurrentBranch({
-					directory: vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor!.document.uri)?.uri.fsPath
-				});
 
 				generatePledge({
 					fromBranch: input,
-					toBranch: currentBranch,
+					toBranch: '',
 					directory: vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor!.document.uri)?.uri.fsPath
 				});
 
@@ -68,13 +70,9 @@ export function activate (context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('pledge.generateToDefaultBranch', () => {
 		const defaultBranchName: string = vscode.workspace.getConfiguration('pledge').get('defaultBranchName') || 'main';
 		try {
-			const currentBranch = getCurrentBranch({
-				directory: vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor!.document.uri)?.uri.fsPath
-			});
-
 			generatePledge({
 				fromBranch: defaultBranchName,
-				toBranch: currentBranch,
+				toBranch: '',
 				directory: vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor!.document.uri)?.uri.fsPath
 			});
 		} catch (err) {
